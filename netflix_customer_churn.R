@@ -1,8 +1,10 @@
 ##import_library
+
 library(ggplot2)
 library(dplyr)
 library(caTools)
 library(car)
+library(corrplot)
 
 ##import_data_set
 
@@ -10,18 +12,31 @@ data = read.csv(file.choose(), header = T)
 attach(data)
 
 ##Exploratory_Data_Analysis(EDA)##
-#general overview
+
+#general_overview
 
 head(data)
 summary(data)
 any(is.na(data))
 str(data)
-table(churned)
+churn_rate=table(churned)*100/length(churned)
+
+#encoding
+
+data$gender_encoded <- as.numeric(factor(gender, levels = c("Male", "Female", "Other")))-1
+data$subscription_type_encoded <- as.numeric(factor(subscription_type_factor, levels = c("Basic", "Premium", "Standard")))-1
+data$region_encoded <- as.numeric(factor(region, levels = c("Africa", "Asia", "Europe", "North America", "Oceania", "South America")))-1
+data$device_encoded <- as.numeric(factor(device, levels = c("Desktop", "Laptop", "Mobile", "Tablet", "TV")))-1
+
 
 #uni_variate_analysis
 
+boxplot(watch_hours~churned_factor, main = "Watch Hours") #users with low watch time are churning more
+boxplot(last_login_days~churned_factor, main = "Last Login Days") #churned users have longer gaps since their last login
+boxplot(age~churned_factor, main = "Age")
+boxplot(avg_watch_time_per_day~churned_factor, main = "Avg Watch Hours Per Day")
 ggplot(data, aes(subscription_type))+ geom_bar(fill = "steelblue")+geom_text(stat = "count", aes(label = after_stat(count), vjust = -.5))+labs(title = "Bar Plot of Subscription Type", x = "Subscription Type", y = "Number of Users")+theme_minimal(base_size = 14)
-ggplot(data, aes(gender))+ geom_bar(fill = "steelblue")+geom_text(stat = "count", aes(label = after_stat(count), vjust = -.5))+labs(title = "Bar Plot of Gender", x = "Gender", y = "Number of Users")+theme_minimal(base_size = 14)
+ggplot(data, aes(gender))+ geom_bar(fill = "steelblue")+geom_text(stat = "count", aes(label = after_stat(count), vjust = -.5))+labs(title = "Bar Plot of Gender", x = "Gender", y = "Number of Users")+theme_minimal(base_size = 14) #balanced representation across genders
 ggplot(data, aes(region))+ geom_bar(fill = "steelblue")+geom_text(stat = "count", aes(label = after_stat(count), vjust = -.5))+labs(title = "Bar Plot of Region", x = "Region", y = "Number of Users")+theme_minimal(base_size = 14)
 ggplot(data, aes(device))+ geom_bar(fill = "steelblue")+geom_text(stat = "count", aes(label = after_stat(count), vjust = -.5))+labs(title = "Bar Plot of Device", x = "Device", y = "Number of Users")+theme_minimal(base_size = 14)
 ggplot(data, aes(payment_method))+ geom_bar(fill = "steelblue")+geom_text(stat = "count", aes(label = after_stat(count), vjust = -.5))+labs(title = "Bar Plot of Payment Method", x = "Payment Method", y = "Number of Users")+theme_minimal(base_size = 14)
@@ -34,7 +49,9 @@ ggplot(data, aes(x = watch_hours)) + geom_histogram(binwidth = 5, fill = "steelb
 ggplot(data, aes(x = watch_hours)) + geom_histogram(binwidth = .5, fill = "steelblue", color = "white") + labs(title = "Histogram of Watch Hours", x = "Watch Hours", y = "Count")+theme_minimal()
 ggplot(data, aes(x = avg_watch_time_per_day)) + geom_histogram(binwidth = .5, fill = "steelblue", color = "white") + labs(title = "Histogram of Average Watch Time Per Day", x = "Avg Watch Time Per Day", y = "Count")+theme_minimal()
 
-#churned vs. non churned customers
+
+#churned_vs_non_churned_customers
+
 churned_factor=as.factor(churned)
 ggplot(data, aes(x = churned_factor, fill = gender)) +geom_bar(position = "stack", width = 0.5)+labs(title = "Gender vs Churned", x = "Churned", y = "Number of Users", fill = "Gender")
 ggplot(data, aes(x = churned_factor, fill = subscription_type)) +geom_bar(position = "stack", width = 0.5)+labs(title = "Subscription type vs Churned", x = "Churned", y = "Number of Users", fill = "Subscription Type")
@@ -45,19 +62,31 @@ ggplot(data, aes(x = churned_factor, fill = monthly_fee_factor)) +geom_bar(posit
 number_of_profiles_factor = as.factor(number_of_profiles)
 ggplot(data, aes(x = churned_factor, fill = favorite_genre)) +geom_bar(position = "stack", width = 0.2)+labs(title = "Favorite Genre vs Churned", x = "Churned", y = "Number of Users", fill = "Favorite Genre")
 
+#correlation_heatmap
+
+num_data=data[sapply(data, is.numeric)]
+cor_matrix <- cor(num_data, use = "complete.obs")
+corrplot(cor_matrix, method = "color", addCoef.col = "black", main = "correlation heatmap")
+
+##Hypothesis Testing
 
 ##ML_Algorithms
 
 #Splitting_the_data_set
+
 split = sample.split(data, SplitRatio = 0.8)
 train_reg = subset(data, split == "TRUE")
 test_reg = subset (data, split == "FALSE")
+
 #multi_collinearity_test
 #Building_the_model
-logistic_model = glm(churned_factor ~ monthly_fee_factor + subscription_type_factor + watch_hours, family = binomial)
+
+logistic_model = glm(churned_factor ~ monthly_fee_factor + watch_hours, family = binomial)
 logistic_model
 
 
 #use anova for comparision of model
-monthly_fee_factor
+#to test whether avg watch hours significantly differs by subscription type
+anova1=aov(watch_hours~subscription_type_factor)
+summary(anova1)
 
