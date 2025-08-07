@@ -6,6 +6,7 @@ An exploratory data analysis to understand customer churn pattern using R
 - [Overview](#overview)
 - [Dataset](#dataset)
 - [Installation](#installation)
+- [Data Preprocessing](#data_preprocessing)
 - [Usage](#usage)
 - [Results](#results)
 - [Authors](#authors)
