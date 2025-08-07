@@ -30,10 +30,16 @@ The dataset contains:
 
 ## Exploratory Data Analysis(EDA)
 
-•	Categorical variables were encoded using label encoding.
+•Encoded categorical variables using:
+•	Label Encoding (for binary/ordinal variables)
+•	One-Hot Encoding (for nominal variables)
 •	Analyzed distributions of numerical variables using histograms and boxplots.
-•	Outliers were detected using boxplots and treated accordingly.
-•	Explored relationships between variables using barplots, histograms, boxplots, correlation heatmaps.
+•	Explored relationships between variables using:
+•	Bar plots for categorical variables (e.g., churn rate by subscription type)
+•	Boxplots (e.g., last login days vs churn status)
+•	Correlation heatmaps (for numeric variables)
+•	Identified outliers and trends in user behavior (e.g., higher churn with low login activity)
+•	Detected potential features for modeling based on visual insights
 
 ## Results
 
