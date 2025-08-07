@@ -6,6 +6,7 @@ An exploratory data analysis to understand customer churn pattern using R
 - [Overview](#overview)
 - [Dataset](#dataset)
 - [Exploratory Data Analysis(EDA)](#eda)
+- [Hypothesis Testing](#statistical_testing)
 - [Results](#results)
 - [Authors](#authors)
 
@@ -40,6 +41,13 @@ The dataset contains:
 •	Correlation heatmaps (for numeric variables)
 •	Identified outliers and trends in user behavior (e.g., higher churn with low login activity)
 •	Detected potential features for modeling based on visual insights
+
+## Hypothesis Testing
+
+- **T-test**: Compared `tenure` between churned and non-churned users. Found statistically significant difference (p < 0.05).
+- **Chi-squared Test**: Examined relationship between `plan_type` and churn. Result suggests dependency (p < 0.01).
+- **Correlation Test**: Pearson correlation between `monthly_fee` and churn was weak and not statistically significant.
+
 
 ## Results
 
