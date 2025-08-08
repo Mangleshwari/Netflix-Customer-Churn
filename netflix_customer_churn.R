@@ -24,6 +24,7 @@ churn_rate=table(churned)*100/length(churned)
 #encoding
 
 data$gender_encoded <- as.numeric(factor(gender, levels = c("Male", "Female", "Other")))-1
+subscription_type_factor=as.factor(subscription_type)
 data$subscription_type_encoded <- as.numeric(factor(subscription_type_factor, levels = c("Basic", "Premium", "Standard")))-1
 data$region_encoded <- as.numeric(factor(region, levels = c("Africa", "Asia", "Europe", "North America", "Oceania", "South America")))-1
 data$device_encoded <- as.numeric(factor(device, levels = c("Desktop", "Laptop", "Mobile", "Tablet", "TV")))-1
@@ -31,6 +32,9 @@ data$device_encoded <- as.numeric(factor(device, levels = c("Desktop", "Laptop",
 
 #uni_variate_analysis
 
+churned_factor=as.factor(churned)
+monthly_fee_factor=as.factor(monthly_fee)
+number_of_profiles_factor = as.factor(number_of_profiles)
 boxplot(watch_hours~churned_factor, main = "Watch Hours") #users with low watch time are churning more
 boxplot(last_login_days~churned_factor, main = "Last Login Days") #churned users have longer gaps since their last login
 boxplot(age~churned_factor, main = "Age")
@@ -52,14 +56,11 @@ ggplot(data, aes(x = avg_watch_time_per_day)) + geom_histogram(binwidth = .5, fi
 
 #churned_vs_non_churned_customers
 
-churned_factor=as.factor(churned)
 ggplot(data, aes(x = churned_factor, fill = gender)) +geom_bar(position = "stack", width = 0.5)+labs(title = "Gender vs Churned", x = "Churned", y = "Number of Users", fill = "Gender")
 ggplot(data, aes(x = churned_factor, fill = subscription_type)) +geom_bar(position = "stack", width = 0.5)+labs(title = "Subscription type vs Churned", x = "Churned", y = "Number of Users", fill = "Subscription Type")
 ggplot(data, aes(x = churned_factor, fill = region)) +geom_bar(position = "stack", width = 0.5)+labs(title = "Region vs Churned", x = "Churned", y = "Number of Users", fill = "Region")
 ggplot(data, aes(x = churned_factor, fill = device)) +geom_bar(position = "stack", width = 0.2)+labs(title = "Device vs Churned", x = "Churned", y = "Number of Users", fill = "Device")
-monthly_fee_factor=as.factor(monthly_fee)
 ggplot(data, aes(x = churned_factor, fill = monthly_fee_factor)) +geom_bar(position = "stack", width = 0.2)+labs(title = "Monthly fee vs Churned", x = "Churned", y = "Number of Users", fill = "Monthly fee")
-number_of_profiles_factor = as.factor(number_of_profiles)
 ggplot(data, aes(x = churned_factor, fill = favorite_genre)) +geom_bar(position = "stack", width = 0.2)+labs(title = "Favorite Genre vs Churned", x = "Churned", y = "Number of Users", fill = "Favorite Genre")
 
 #correlation_heatmap
@@ -70,7 +71,22 @@ corrplot(cor_matrix, method = "color", addCoef.col = "black", main = "correlatio
 
 ##Hypothesis Testing
 
-##ML_Algorithms
+#to check whether the mean watch hours are the same for churned and non-churned customers.
+t.test(watch_hours~churned) #Ho rejected
+
+#to check whether mean monthly fee is the same for churned and non-churned customers.
+t.test(monthly_fee~churned)  #Ho rejected
+
+#to check whether there is no association between churn and subscription type
+chisq.test(table(churned_factor, subscription_type_factor))  #Ho rejected
+ 
+#to test whether avg watch hours significantly differs by subscription type
+anova1=aov(watch_hours~subscription_type_factor) 
+summary(anova1) #Ho accepted
+
+#to test whether monthly fee significantly differs by churn
+anova2=aov(churned~monthly_fee)
+summary(anova2) #Ho rejected
 
 #Splitting_the_data_set
 
@@ -81,12 +97,8 @@ test_reg = subset (data, split == "FALSE")
 #multi_collinearity_test
 #Building_the_model
 
-logistic_model = glm(churned_factor ~ monthly_fee_factor + watch_hours, family = binomial)
-logistic_model
-
-
-#use anova for comparision of model
-#to test whether avg watch hours significantly differs by subscription type
-anova1=aov(watch_hours~subscription_type_factor)
-summary(anova1)
-
+logistic_model = glm(churned_factor ~ monthly_fee_factor + watch_hours, family = binomial, data = train_reg)
+summary(logistic_model)
+predicted_prob=predict(test_reg, type = "response")
+predict_reg <- as.data.frame(predict_reg)
+predict_reg
