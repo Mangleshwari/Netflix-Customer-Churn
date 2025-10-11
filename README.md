@@ -6,7 +6,7 @@ An exploratory data analysis to understand customer churn pattern using R
 - [Overview](#overview)
 - [Dataset](#dataset)
 - [Exploratory Data Analysis(EDA)](#eda)
-- [Hypothesis Testing](#hypothesis testing)
+- [Hypothesis Testing](#hypothesis_testing)
 - [Results](#results)
 - [Authors](#authors)
 
