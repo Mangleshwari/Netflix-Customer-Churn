@@ -47,6 +47,7 @@ The dataset contains:
 - **T-test**: Compared `tenure` between churned and non-churned users. Found statistically significant difference (p < 0.05).
 - **Chi-squared Test**: Examined relationship between `plan_type` and churn. Result suggests dependency (p < 0.01).
 - **Correlation Test**: Pearson correlation between `monthly_fee` and churn was weak and not statistically significant.
+- **ANOVA**: Tested whether avg watch hours significantly differs churn subscription type and whether monthly fee significantly differs by churn.
 
 
 ## Results
